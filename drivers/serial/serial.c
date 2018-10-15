@@ -1074,7 +1074,8 @@ static ssize_t uart_write(FAR struct file *filep, FAR const char *buffer,
    * a little differently.
    */
 
-  if (up_interrupt_context() || sched_idletask())
+  /*if (up_interrupt_context() || sched_idletask())*/
+  if (1)
     {
 #ifdef CONFIG_SERIAL_REMOVABLE
       /* If the removable device is no longer connected, refuse to write to
@@ -1093,9 +1094,9 @@ static ssize_t uart_write(FAR struct file *filep, FAR const char *buffer,
 
       if (dev->isconsole)
         {
-          irqstate_t flags = enter_critical_section();
+          /*irqstate_t flags = enter_critical_section();*/
           ret = uart_irqwrite(dev, buffer, buflen);
-          leave_critical_section(flags);
+          /*leave_critical_section(flags);*/
           return ret;
         }
       else
