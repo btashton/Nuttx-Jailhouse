@@ -129,6 +129,11 @@ void up_block_task(struct tcb_s *tcb, tstate_t task_state)
 
           rtcb = this_task();
 
+          for(int i = 0; i < 32; i++){
+            pd[i] = rtcb->xcp.page_table[i];
+          }
+          set_pcid(rtcb->pid);
+
           /* Reset scheduler parameters */
 
           sched_resume_scheduler(rtcb);
@@ -155,6 +160,7 @@ void up_block_task(struct tcb_s *tcb, tstate_t task_state)
           for(int i = 0; i < 32; i++){
             pd[i] = rtcb->xcp.page_table[i];
           }
+          set_pcid(rtcb->pid);
 
 #ifdef CONFIG_ARCH_ADDRENV
          /* Make sure that the address environment for the previously
@@ -168,6 +174,9 @@ void up_block_task(struct tcb_s *tcb, tstate_t task_state)
           /* Reset scheduler parameters */
 
           sched_resume_scheduler(rtcb);
+
+          sinfo("resuming %d\n", rtcb->pid);
+
 
           /* Then switch contexts */
 
