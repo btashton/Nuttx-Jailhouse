@@ -147,8 +147,8 @@ void apic_timer_set(unsigned long timeout_ns)
 static int broadwell_timerisr(int irq, uint32_t *regs, void *arg)
 {
   /* Process timer interrupt */
-
   switch (comm_region->msg_to_cell) {
+#if 0
   case BROADWELL_MSG_SHUTDOWN_REQUEST:
     comm_region->cell_state = BROADWELL_CELL_SHUT_DOWN;
     for(;;){
@@ -156,6 +156,7 @@ static int broadwell_timerisr(int irq, uint32_t *regs, void *arg)
       asm("hlt");
     }
     break;
+#endif
   default:
     break;
   }
