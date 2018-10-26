@@ -53,6 +53,19 @@
  * Private Types
  ****************************************************************************/
 
+/* The initial stack point is aligned at word (4 byte) boundaries. If
+ * necessary frame_size must be rounded up to the next boundary to retain
+ * this alignment.
+ */
+
+#define STACK_ALIGNMENT     4
+
+/* Stack alignment macros */
+
+#define STACK_ALIGN_MASK    (STACK_ALIGNMENT-1)
+#define STACK_ALIGN_DOWN(a) ((a) & ~STACK_ALIGN_MASK)
+#define STACK_ALIGN_UP(a)   (((a) + STACK_ALIGN_MASK) & ~STACK_ALIGN_MASK)
+
 /****************************************************************************
  * Private Function Prototypes
  ****************************************************************************/
@@ -119,13 +132,21 @@ int up_use_stack(struct tcb_s *tcb, void *stack, size_t stack_size)
    * top_of_stack must be rounded down to the next boundary
    */
 
-  top_of_stack &= ~3;
+  top_of_stack = STACK_ALIGN_DOWN(top_of_stack);
   size_of_stack = top_of_stack - (uint32_t)tcb->stack_alloc_ptr + 4;
 
   /* Save the adjusted stack values in the struct tcb_s */
 
   tcb->adj_stack_ptr  = (uint32_t*)top_of_stack;
   tcb->adj_stack_size = size_of_stack;
+
+#ifdef CONFIG_STACK_COLORATION
+  /* If stack debug is enabled, then fill the stack with a recognizable
+   * value that we can use later to test for high water marks.
+   */
+
+  up_stack_color(tcb->stack_alloc_ptr, tcb->adj_stack_size);
+#endif
 
   return OK;
 }

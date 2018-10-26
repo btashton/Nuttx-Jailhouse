@@ -104,12 +104,24 @@
 /****************************************************************************
  * Name: Start
  ****************************************************************************/
-
+	.set    COLOR, 0xdeadbeef
 	.type	__start, @function
 __start:
 	/* Set up the stack */
 
 	mov		$(idle_stack + CONFIG_IDLETHREAD_STACKSIZE), %esp
+
+#ifdef CONFIG_STACK_COLORATION
+	/* prepare to color idle stack */
+	movl	$(idle_stack), %eax
+	movl    $(idle_stack+CONFIG_IDLETHREAD_STACKSIZE-4), %ebx
+
+color_stack:
+	movl	$COLOR, (%eax)
+	addl	$4, %eax
+	cmp		%ebx, %eax
+	jb		color_stack
+#endif
 
 	/* Multiboot setup */
 

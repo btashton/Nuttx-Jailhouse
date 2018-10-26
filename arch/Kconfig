@@ -72,6 +72,7 @@ config ARCH_SIM
 
 config ARCH_X86
 	bool "x86"
+	select ARCH_HAVE_STACKCHECK
 	---help---
 		Intel x86 architectures.
 

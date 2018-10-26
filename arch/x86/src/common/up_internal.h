@@ -44,6 +44,7 @@
 
 #ifndef __ASSEMBLY__
 #  include <nuttx/compiler.h>
+#  include <sys/types.h>
 #  include <stdint.h>
 #endif
 
@@ -97,6 +98,14 @@
  */
 
 #define up_restorestate(regs) (g_current_regs = regs)
+
+/* This is the value used to mark the stack for subsequent stack monitoring
+ * logic.
+ */
+
+#define STACK_COLOR    0xdeadbeef
+#define INTSTACK_COLOR 0xdeadbeef
+#define HEAP_COLOR     'h'
 
 /****************************************************************************
  * Public Types
@@ -240,6 +249,10 @@ void up_usbuninitialize(void);
 #else
 # define up_usbinitialize()
 # define up_usbuninitialize()
+#endif
+
+#ifdef CONFIG_STACK_COLORATION
+void up_stack_color(FAR void *stackbase, size_t nbytes);
 #endif
 
 #endif /* __ASSEMBLY__ */
