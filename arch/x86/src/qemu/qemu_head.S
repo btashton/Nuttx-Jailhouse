@@ -109,12 +109,12 @@
 __start:
 	/* Set up the stack */
 
-	mov		$(idle_stack + CONFIG_IDLETHREAD_STACKSIZE), %esp
+	mov		$(_ebss + CONFIG_IDLETHREAD_STACKSIZE), %esp
 
 #ifdef CONFIG_STACK_COLORATION
 	/* prepare to color idle stack */
-	movl	$(idle_stack), %eax
-	movl    $(idle_stack+CONFIG_IDLETHREAD_STACKSIZE-4), %ebx
+	movl	$(_ebss), %eax
+	movl    $(_ebss+CONFIG_IDLETHREAD_STACKSIZE-4), %ebx
 
 color_stack:
 	movl	$COLOR, (%eax)
@@ -142,20 +142,6 @@ hang:
 	.size	__start, . - __start
 
 /****************************************************************************
- * .bss
- ****************************************************************************/
-
-/* The stack for the IDLE task thread is declared in .bss.  NuttX boots and
- * initializes on the IDLE thread, then at the completion of OS startup, this
- * thread becomes the thread that executes when there is nothing else to
- * do in the system (see up_idle()).
- */
-
-	.type	idle_stack, @object
-	.comm   idle_stack, CONFIG_IDLETHREAD_STACKSIZE, 32
-	.size	idle_stack, CONFIG_IDLETHREAD_STACKSIZE
-
-/****************************************************************************
  * .rodata
  ****************************************************************************/
 
@@ -168,6 +154,6 @@ hang:
 
 	.type	g_idle_topstack, @object
 g_idle_topstack:
-	.long	_ebss
+	.long	_ebss + CONFIG_IDLETHREAD_STACKSIZE
 	.size	g_idle_topstack, . - g_idle_topstack
 	.end
